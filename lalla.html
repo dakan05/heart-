@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Тест с сердцем</title>
+<style>
+  body {
+    background-color: #fff0f6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: #d10000;
+  }
+
+  .heart {
+    width: 150px;
+    height: 150px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+
+  .hint {
+    font-size: 20px;
+    color: #d10000;
+    font-weight: bold;
+    margin-bottom: 30px;
+  }
+
+  .text {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    display: none;
+  }
+  .test-question {
+    margin-top: 20px;
+    font-size: 20px;
+    text-align: center;
+    max-width: 320px;
+  }
+  .answers button {
+    margin: 8px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .result {
+    margin-top: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    min-height: 24px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Сердце SVG -->
+<svg id="heart" class="heart" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <path d="M256 472l-35.3-32.3C118.3 349.8 48 280.5 48 192 48 117.3 109.3 56 184 56c43.3 0 84.3 20.3 108 52.2C315.7 76.3 356.7 56 400 56c74.7 0 136 61.3 136 136 0 88.5-70.3 157.8-172.7 247.7L256 472z" fill="red"/>
+</svg>
+
+<p id="clickHint" class="hint">Нажми на сердце 💖</p>
+
+<!-- Блок теста -->
+<div class="test" id="test" style="display:none;">
+  <div class="test-question" id="question"></div>
+  <div class="answers" id="answers"></div>
+  <div class="result" id="result"></div>
+</div>
+
+<!-- Финальный текст -->
+<div class="text" id="finalText">привет дура Диана.Б</div>
+
+<script>
+  const heart = document.getElementById('heart');
+  const test = document.getElementById('test');
+  const questionEl = document.getElementById('question');
+  const answersEl = document.getElementById('answers');
+  const resultEl = document.getElementById('result');
+  const finalText = document.getElementById('finalText');
+
+  const questions = [
+    {
+      question: "Как тебе живется без меня?",
+      answers: ["Плохо", "Ужасно"],
+      correct: ["Плохо", "Ужасно"],
+    },
+    {
+      question: "Скучаешь ли ты по мне?",
+      answers: ["Не очень", "Капец как"],
+      correct: ["Капец как"],
+    },
+    {
+      question: "Считаешь ли ты дни до нашей встречи?",
+      answers: ["Считаю каждую минуту", "Ты че ебанутая"],
+      correct: ["Считаю каждую минуту"],
+      specialCase: "Ты че ебанутая"
+    }
+  ];
+
+  let currentQuestion = 0;
+
+  heart.addEventListener('click', () => {
+    test.style.display = 'block';
+    heart.style.display = 'none';
+    finalText.style.display = 'none';
+    currentQuestion = 0;
+    showQuestion();
+    resultEl.textContent = '';
+  });
+
+  function showQuestion() {
+    resultEl.textContent = '';
+    const q = questions[currentQuestion];
+    questionEl.textContent = q.question;
+    answersEl.innerHTML = '';
+    q.answers.forEach(answer => {
+      const btn = document.createElement('button');
+      btn.textContent = answer;
+      btn.onclick = () => checkAnswer(answer);
+      answersEl.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(answer) {
+    const q = questions[currentQuestion];
+    if (q.specialCase && answer === q.specialCase) {
+      resultEl.textContent = "САМА ТАКАЯ";
+      return;
+    }
+
+    if (Array.isArray(q.correct) ? q.correct.includes(answer) : q.correct === answer) {
+      if (currentQuestion === 1 && answer === "Капец как") {
+        resultEl.textContent = "Правильно! 😍";
+      } else {
+        resultEl.textContent = "Правильно!";
+      }
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        setTimeout(showQuestion, 1200);
+      } else {
+        setTimeout(() => {
+          test.style.display = 'none';
+          finalText.style.display = 'block';
+        }, 1200);
+      }
+    } else {
+      resultEl.textContent = "Неправильно. Попробуй ещё раз.";
+    }
+  }
+</script>
+
+</body>
+</html>
